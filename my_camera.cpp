@@ -225,12 +225,12 @@ void MyCamera::setMotion(bool buttonPress, float x, float y)
     else if (m_eMode == MYCAMERA_ZOOM) // Press key Z
     {
         std::cout << "  Zooming..." << std::endl;
-        //_zoom(...);
+        _zoom(delta.x, delta.y);
     }
     else if (m_eMode == MYCAMERA_TWIST) // Press key T
     {
         std::cout << "  Twisting..." << std::endl;
-        //_twist(...);
+        _twist(delta.x, delta.y);
     }
 
     // TODO - Combine m_m4TempTransform with m_m4ViewMatrix to become the new m_m4ViewMatrix
@@ -279,19 +279,38 @@ void MyCamera::_pan(float dx, float dy)
     float theta = fov / 2.0f;
     float b = 2.0f * distance * tan(theta);
 
-    float dw = dx * b / 800.0f;
-    float dh = dy * b / 600.0f;
+    const float w = 800.0f;
+    const float h = 600.0f;
 
-    m_m4TempTransform[3][0] = -dw * 500.0f;
-    m_m4TempTransform[3][1] = -dh * 500.0f;
+    float dw = dx * b / w;
+    float dh = dy * b / h;
+
+    m_m4TempTransform[3][0] = -dw * 200.0f; // Scaling factor
+    m_m4TempTransform[3][1] = -dh * 200.0f; // Scaling factor
 }
 
 void MyCamera::_zoom(float dx, float dy)
 {
     // TODO: Handle zoom operation
-    m_m4TempTransform = glm::mat4(0.0f);
+    m_m4TempTransform = glm::mat4(1.0f);
+    
+    const float h = 600.0f;
 
-    float distance = m_m4ViewMatrix[3][2];
+    float d = m_m4ViewMatrix[3][2];
+
+    float newD = d * 1.0f / (1.0f + dy / h * 2.0f);
+
+    // we need to calculate the delta d rather new d here
+    float deltaD = d * (newD - d);
+    m_m4TempTransform[3][2] = deltaD;
+
+    // std::cout << "dy: " << dy << std::endl;
+    // std::cout << "normalizedDy: " << normalizeMouse << std::endl;
+    // std::cout << "newD: " << newD << std::endl;
+    // std::cout << "d: " << d << std::endl;
+    // std::cout << "deltaD: " << deltaD << std::endl;
+    // std::cout << "m_m4ViewMatrix[3][2] after: " << m_m4ViewMatrix[3][2] << std::endl;
+
 }
 
 void MyCamera::_rotate(float dx, float dy)
@@ -352,8 +371,20 @@ void MyCamera::_twist(float dx, float dy)
     // TODO: Handle twist operation
     m_m4TempTransform = glm::mat4(1.0f);
 
-    float delta_theta = 0.0f;
+    const float w = 800.0f;
+    const float h = 600.0f;
 
+    // Step 1: normalize both positions by window width and height
+    float prevX = m_vPrevPos.x / w;
+    float prevY = m_vPrevPos.y / h;
+    float currX = m_vCurrPos.x / w;
+    float currY = m_vCurrPos.y / h;
+
+    // Step 2: calculate delta rotation
+    float prevTheta = atan2f(prevX - 0.5f, prevY - 0.5f);
+    float theta     = atan2f(currX - 0.5f, currY - 0.5f);
+    float delta_theta = 180.0f / glm::pi<float>() * (theta - prevTheta) * 200.0f; // scaling factor
+  
     glm::vec3 sx, sy, sz;
     _getScreenXYZ(sx, sy, sz);
 
