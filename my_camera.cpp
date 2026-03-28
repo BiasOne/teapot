@@ -263,7 +263,7 @@ void MyCamera::setMotion(bool buttonPress, float x, float y)
     centerInverse[3][1] = -lookAt.y;
     centerInverse[3][2] = -lookAt.z;
 
-    m_m4ViewMatrix = m_m4ViewMatrix * translateOnlyMatrix * center * rotateOnlyMatrix * centerInverse;
+    m_m4ViewMatrix = translateOnlyMatrix * m_m4ViewMatrix * center * rotateOnlyMatrix * centerInverse;
 
 	// When done, set the current mouse position as the previous one
     m_vPrevPos = m_vCurrPos;
@@ -302,16 +302,9 @@ void MyCamera::_zoom(float dx, float dy)
 
     // we need to calculate the delta d rather new d here
     float deltaD = d * (newD - d);
+    
     m_m4TempTransform[3][2] = deltaD;
-
-    // std::cout << "dy: " << dy << std::endl;
-    // std::cout << "normalizedDy: " << normalizeMouse << std::endl;
-    // std::cout << "newD: " << newD << std::endl;
-    // std::cout << "d: " << d << std::endl;
-    // std::cout << "deltaD: " << deltaD << std::endl;
-    // std::cout << "m_m4ViewMatrix[3][2] after: " << m_m4ViewMatrix[3][2] << std::endl;
-
-}
+}   
 
 void MyCamera::_rotate(float dx, float dy)
 {
