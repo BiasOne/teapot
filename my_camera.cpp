@@ -220,7 +220,7 @@ void MyCamera::setMotion(bool buttonPress, float x, float y)
     else if (m_eMode == MYCAMERA_PAN) // Press key P
     {
         std::cout << "  Panning..." << std::endl;
-        //_pan(...);
+        _pan(delta.x, delta.y);
     }
     else if (m_eMode == MYCAMERA_ZOOM) // Press key Z
     {
@@ -272,8 +272,9 @@ void MyCamera::setMotion(bool buttonPress, float x, float y)
 void MyCamera::_pan(float dx, float dy)
 {
     // TODO: Handle pan operation
-    m_m4TempTransform = glm::mat4(0.0f);
+    m_m4TempTransform = glm::mat4(1.0f);
     float distance = m_m4ViewMatrix[3][2];
+    std::cout << "d = " << distance << std::endl;
     float fov = glm::radians(50.0f);
     float theta = fov / 2.0f;
     float b = 2.0f * distance * tan(theta);
@@ -281,8 +282,8 @@ void MyCamera::_pan(float dx, float dy)
     float dw = dx * b / 800.0f;
     float dh = dy * b / 600.0f;
 
-    m_m4TempTransform[3][0] = -dw;
-    m_m4TempTransform[3][1] = -dh;
+    m_m4TempTransform[3][0] = -dw * 500.0f;
+    m_m4TempTransform[3][1] = -dh * 500.0f;
 }
 
 void MyCamera::_zoom(float dx, float dy)
