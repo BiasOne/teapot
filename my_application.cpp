@@ -58,12 +58,12 @@ void MyApplication::run()
 		// TODO: Adjust perspective and orthographic cameras so the entire model can be visible
         if (m_bPerspectiveProjection)
             // near and far will automatically apply negative values
-            m_myCamera.setPerspectiveProjection(glm::radians(50.f), apsectRatio, 0.1f, 100.f);
+            m_myCamera.setPerspectiveProjection(glm::radians(50.f), apsectRatio, 0.1f, 500.0f);
         else
             // because Y is down by default for Vulkan, when we set top to be minus value, we can flip the coordinate
             // such that Y is up. Because we move the part 2.5 units, the near and far value needs to cover the model
             // Also, near and far will automatically apply negative values
-            m_myCamera.setOrthographicProjection(-apsectRatio * 3.0f, apsectRatio * 3.0f, -3.0f, 3.0f, -50.0f, 50.0f);
+            m_myCamera.setOrthographicProjection(-apsectRatio * 3.0f, apsectRatio * 3.0f, -3.0f, 3.0f, -50.0f, 500.0f);
 
         // Please note that commandBuffer could be null pointer
         // if the swapChain needs to be recreated
@@ -98,18 +98,23 @@ void MyApplication::_loadGameObjects()
 	// 1. Use the function MyModel::createModelFromFile to create the model and the game object
     // 2. Set the min max value of the model to m_myCamera
 	// 3: Call 'Fit All' function to set the initial camera position to view the entrire model
-    glm::vec3 min, max;
-    std::shared_ptr<MyModel> mymodel = MyModel::createModelFromFile(m_myDevice, "models/teapot.obj", min, max);
+    glm::vec3 min, max, smin, smax;
+    std::shared_ptr<MyModel> mymodel = MyModel::createModelFromFile(m_myDevice, "models/mario_v4.obj", min, max);    
+    auto terrible_mario = MyGameObject::createGameObject();
+    terrible_mario.model = mymodel;
+    terrible_mario.transform.translation = { 0.0f, 0.0f, 0.0f};
+    terrible_mario.transform.scale = { 1.0f, 1.0f, 1.0f };
+    m_vMyGameObjects.push_back(std::move(terrible_mario));
+    m_myCamera.setSceneMinMax(min, max);
+
+    std::shared_ptr<MyModel> sceneModel = MyModel::createModelFromFile(m_myDevice, "models/scene.obj", smin, smax);
+    auto scene = MyGameObject::createGameObject();
+    scene.model = sceneModel;
+    scene.transform.translation = { 2.0f, 4.0f, -2.0f };  // behind Mario from camera's perspective
+    scene.transform.scale = { 3.0f, 3.0f, 3.0f };
+    m_vMyGameObjects.push_back(std::move(scene));
 
     
-    auto teaPot = MyGameObject::createGameObject();
-    teaPot.model = mymodel;
-
-    teaPot.transform.translation = { 0.0f, 0.0f, 0.0f};
-    teaPot.transform.scale = { 1.0f, 1.0f, 1.0f };
-
-    m_vMyGameObjects.push_back(std::move(teaPot));
-    m_myCamera.setSceneMinMax(min, max);
     m_myCamera.setMode(MyCamera::MYCAMERA_FITALL);
 }
 
