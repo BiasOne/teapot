@@ -99,11 +99,11 @@ void MyApplication::_loadGameObjects()
     m_objPosMax = max;
 
     // std::shared_ptr<MyModel> mymodel = MyModel::createModelFromFile(m_myDevice, "models/teapot.obj", min, max);    
-    // auto terrible_mario = MyGameObject::createGameObject();
-    // terrible_mario.model = mymodel;
-    // terrible_mario.transform.translation = { 0.0f, 0.0f, 0.0f};
-    // terrible_mario.transform.scale = { 1.0f, 1.0f, 1.0f };
-    // m_vMyGameObjects.push_back(std::move(terrible_mario));
+    // auto teapot = MyGameObject::createGameObject();
+    // teapot.model = mymodel;
+    // teapot.transform.translation = { 0.0f, 0.0f, 0.0f};
+    // teapot.transform.scale = { 1.0f, 1.0f, 1.0f };
+    // m_vMyGameObjects.push_back(std::move(teapot));
     // m_myCamera.setSceneMinMax(min, max);
 
     std::shared_ptr<MyModel> mymodel = MyModel::createModelFromFile(m_myDevice, "models/mario.obj", min, max);    
