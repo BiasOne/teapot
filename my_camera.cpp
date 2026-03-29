@@ -391,7 +391,7 @@ void MyCamera::_fitAll()
     glm::vec3 lookAt = (m_vSceneMin + m_vSceneMax) / 2.0f;
     float radius = glm::length(m_vSceneMax - m_vSceneMin) / 2.0f;    
     float fov = glm::radians(50.0f);
-    float distance = radius / tan(fov / 2.0f);
+    float distance = radius / tan(fov / 2.0f) * 2.0; // Scale Factor
 
     glm::vec3 viewVector = glm::vec3(0.0f, 0.0f, -1.0f);
     glm::vec3 lookFrom = lookAt - viewVector * distance;

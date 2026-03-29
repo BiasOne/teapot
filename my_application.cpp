@@ -99,6 +99,8 @@ void MyApplication::_loadGameObjects()
     // 2. Set the min max value of the model to m_myCamera
 	// 3: Call 'Fit All' function to set the initial camera position to view the entrire model
     glm::vec3 min, max, smin, smax;
+    m_baseMarioMin = min;
+    m_baseMarioMax = max;
     std::shared_ptr<MyModel> mymodel = MyModel::createModelFromFile(m_myDevice, "models/mario_v4.obj", min, max);    
     auto terrible_mario = MyGameObject::createGameObject();
     terrible_mario.model = mymodel;
@@ -111,11 +113,46 @@ void MyApplication::_loadGameObjects()
     auto scene = MyGameObject::createGameObject();
     scene.model = sceneModel;
     scene.transform.translation = { 2.0f, 4.0f, -2.0f };  // behind Mario from camera's perspective
-    scene.transform.scale = { 3.0f, 3.0f, 3.0f };
+    scene.transform.scale = { 1.0f, 1.0f, 1.0f };
     m_vMyGameObjects.push_back(std::move(scene));
 
     
     m_myCamera.setMode(MyCamera::MYCAMERA_FITALL);
+}
+
+void MyApplication::handleMovement(MyAppKeyMap key)
+{
+    const float speed = 0.01f;
+
+    if (key == KEY_LEFT) 
+    {
+        std::cout << "Move left"  << std::endl;
+        m_vMyGameObjects[0].transform.rotation = {0.0, -1.57f, 0.0};
+        m_vMyGameObjects[0].transform.translation.x -= speed;
+    } 
+    else if (key == KEY_RIGHT) {
+        std::cout << "Move right" << std::endl;
+        m_vMyGameObjects[0].transform.rotation = {0.0f, 1.57f, 0.0f};
+        m_vMyGameObjects[0].transform.translation.x  += speed;
+    }
+    else if (key == KEY_FORWARD) {
+        std::cout << "Move up"    << std::endl;
+        m_vMyGameObjects[0].transform.rotation = {0.0, 3.14f, 0.0f};
+        m_vMyGameObjects[0].transform.translation.z  -= speed;
+    }
+    else if (key == KEY_BACKWARD) {
+        std::cout << "Move down"  << std::endl;
+        m_vMyGameObjects[0].transform.rotation = {0.0f, 0.0f, 0.0f};
+        m_vMyGameObjects[0].transform.translation.z += speed;
+    }
+
+    glm::vec3 currPosition = m_vMyGameObjects[0].transform.translation;
+
+    glm::vec3 newMin = m_baseMarioMin + currPosition;
+    glm::vec3 newMax = m_baseMarioMax + currPosition;
+
+    m_myCamera.setSceneMinMax(newMin, newMax);
+
 }
 
 void MyApplication::mouseButtonEvent(bool bMouseDown, float posx, float posy)

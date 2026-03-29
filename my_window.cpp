@@ -84,6 +84,12 @@ void MyWindow::pollEvents()
 {
 	glfwPollEvents();
 
+	if (glfwGetKey(m_pWindow, GLFW_KEY_A) == GLFW_PRESS)       m_pMyApplication->handleMovement(MyApplication::KEY_LEFT);
+	else if (glfwGetKey(m_pWindow, GLFW_KEY_D) == GLFW_PRESS) m_pMyApplication->handleMovement(MyApplication::KEY_RIGHT);
+	else if (glfwGetKey(m_pWindow, GLFW_KEY_W) == GLFW_PRESS)    m_pMyApplication->handleMovement(MyApplication::KEY_FORWARD);
+	else if (glfwGetKey(m_pWindow, GLFW_KEY_S) == GLFW_PRESS)  m_pMyApplication->handleMovement(MyApplication::KEY_BACKWARD);
+	else m_pMyApplication->handleMovement(MyApplication::KEY_NONE);
+
 	double xpos = 0.0, ypos = 0.0;
 	glfwGetCursorPos(m_pWindow, &xpos, &ypos);
 

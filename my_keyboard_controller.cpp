@@ -4,7 +4,7 @@
 #include <limits>
 
 void MyKeyboardController::moveInPlaneXZ(MyWindow& mywindow, float dt, MyGameObject& gameObject)
-{
+{    
      // Camera rotation
      glm::vec3 rotate{ 0 };
      if (glfwGetKey(mywindow.glfwWindow(), keys.lookRight) == GLFW_PRESS) rotate.y -= 1.f; // Y is up
@@ -26,7 +26,7 @@ void MyKeyboardController::moveInPlaneXZ(MyWindow& mywindow, float dt, MyGameObj
      const glm::vec3 rightDir{ forwardDir.z, 0.f, -forwardDir.x };
      const glm::vec3 upDir{ 0.f, 1.f, 0.f };
 
-     glm::vec3 moveDir{ 0.f };
+     glm::vec3 moveDir{ 0.f };;
      if (glfwGetKey(mywindow.glfwWindow(), keys.moveForward)  == GLFW_PRESS) moveDir -= forwardDir;
      if (glfwGetKey(mywindow.glfwWindow(), keys.moveBackward) == GLFW_PRESS) moveDir += forwardDir;
      if (glfwGetKey(mywindow.glfwWindow(), keys.moveRight)    == GLFW_PRESS) moveDir += rightDir;

@@ -16,6 +16,15 @@ public:
 	static constexpr int WIDTH = 800;
 	static constexpr int HEIGHT = 600;
 
+	enum MyAppKeyMap
+	{
+		KEY_NONE = 0,
+		KEY_LEFT,
+		KEY_RIGHT,
+		KEY_FORWARD,
+		KEY_BACKWARD,
+	};
+
 	MyApplication();
 
 	void run();
@@ -25,6 +34,7 @@ public:
 	void mouseButtonEvent(bool bMouseDown, float posx, float posy);
 	void mouseMotionEvent(float posx, float posy);
 	void setCameraNavigationMode(MyCamera::MyCameraMode mode);
+	void handleMovement(MyAppKeyMap key);
 
 private:
 	void _loadGameObjects();
@@ -37,6 +47,9 @@ private:
 	MyCamera                  m_myCamera{};
 	bool                      m_bPerspectiveProjection;
 	bool                      m_bMouseButtonPress = false;
+
+	glm::vec3 m_baseMarioMin;
+	glm::vec3 m_baseMarioMax;
 };
 
 #endif
