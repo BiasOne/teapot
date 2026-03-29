@@ -233,9 +233,9 @@ void MyCamera::setMotion(bool buttonPress, float x, float y)
 
     // Combine m_m4TempTransform with m_m4ViewMatrix to become the new m_m4ViewMatrix
 
-    // Step 1: decompose m_m4TempTransform to translate only and rotation only matrices
-    // Step 2: center of the scene graph and the inverse of the center
-    // Step 3: previous transform matrix, which is m_m4ViewMatrix
+    // decompose m_m4TempTransform to translate only and rotation only matrices
+    // center of the scene graph and the inverse of the center
+    // previous transform matrix, which is m_m4ViewMatrix
 
     // Combine these 5 matrices together
     // m_m4ViewMatrix = m5 * m4 * m3 * m2 * m1;
@@ -278,7 +278,8 @@ void MyCamera::_pan(float dx, float dy)
 
     const float w = 800.0f;
     const float h = 600.0f;
-
+    
+    // calculate dw and dh based on dx and dy
     float dw = dx * b / w;
     float dh = dy * b / h;
 
@@ -295,7 +296,10 @@ void MyCamera::_zoom(float dx, float dy)
 
     float d = m_m4ViewMatrix[3][2];
 
+    // calculate new view length and new look from point
     float newD = d * 1.0f / (1.0f + dy / h * 2.0f);
+
+    // got stuck here because i didnt have the order or operations correct. was multiplying d*newD before subtracting old d
     float deltaD = d * (newD - d);
     
     m_m4TempTransform[3][2] = deltaD;
@@ -362,11 +366,13 @@ void MyCamera::_twist(float dx, float dy)
     const float w = 800.0f;
     const float h = 600.0f;
 
+    // normalize prevX/prevY and currX and CurrY by width and height of window
     float prevX = m_vPrevPos.x / w;
     float prevY = m_vPrevPos.y / h;
     float currX = m_vCurrPos.x / w;
     float currY = m_vCurrPos.y / h;
 
+    // calculate delta_theta using m_vCurrPos and m_vPrevPos
     float prevTheta = atan2f(prevX - 0.5f, prevY - 0.5f);
     float theta     = atan2f(currX - 0.5f, currY - 0.5f);
     float delta_theta = 180.0f / glm::pi<float>() * (theta - prevTheta) * 200.0f; // scaling factor
