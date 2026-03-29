@@ -48,8 +48,8 @@ private:
 	bool                      m_bPerspectiveProjection;
 	bool                      m_bMouseButtonPress = false;
 
-	glm::vec3 m_baseMarioMin;
-	glm::vec3 m_baseMarioMax;
+	glm::vec3 				  m_objPosMin;
+	glm::vec3 				  m_objPosMax;
 };
 
 #endif

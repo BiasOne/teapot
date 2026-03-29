@@ -63,7 +63,7 @@ void MyApplication::run()
             // because Y is down by default for Vulkan, when we set top to be minus value, we can flip the coordinate
             // such that Y is up. Because we move the part 2.5 units, the near and far value needs to cover the model
             // Also, near and far will automatically apply negative values
-            m_myCamera.setOrthographicProjection(-apsectRatio * 3.0f, apsectRatio * 3.0f, -3.0f, 3.0f, -50.0f, 500.0f);
+            m_myCamera.setOrthographicProjection(-apsectRatio * 3.0f, apsectRatio * 3.0f, -3.0f, 3.0f, -50.0f, 50.0f);
 
         // Please note that commandBuffer could be null pointer
         // if the swapChain needs to be recreated
@@ -94,14 +94,19 @@ void MyApplication::switchProjectionMatrix()
 
 void MyApplication::_loadGameObjects()
 {
-    // TODO: 
-	// 1. Use the function MyModel::createModelFromFile to create the model and the game object
-    // 2. Set the min max value of the model to m_myCamera
-	// 3: Call 'Fit All' function to set the initial camera position to view the entrire model
     glm::vec3 min, max, smin, smax;
-    m_baseMarioMin = min;
-    m_baseMarioMax = max;
-    std::shared_ptr<MyModel> mymodel = MyModel::createModelFromFile(m_myDevice, "models/mario_v4.obj", min, max);    
+    m_objPosMin = min;
+    m_objPosMax = max;
+
+    // std::shared_ptr<MyModel> mymodel = MyModel::createModelFromFile(m_myDevice, "models/teapot.obj", min, max);    
+    // auto terrible_mario = MyGameObject::createGameObject();
+    // terrible_mario.model = mymodel;
+    // terrible_mario.transform.translation = { 0.0f, 0.0f, 0.0f};
+    // terrible_mario.transform.scale = { 1.0f, 1.0f, 1.0f };
+    // m_vMyGameObjects.push_back(std::move(terrible_mario));
+    // m_myCamera.setSceneMinMax(min, max);
+
+    std::shared_ptr<MyModel> mymodel = MyModel::createModelFromFile(m_myDevice, "models/mario.obj", min, max);    
     auto terrible_mario = MyGameObject::createGameObject();
     terrible_mario.model = mymodel;
     terrible_mario.transform.translation = { 0.0f, 0.0f, 0.0f};
@@ -112,10 +117,9 @@ void MyApplication::_loadGameObjects()
     std::shared_ptr<MyModel> sceneModel = MyModel::createModelFromFile(m_myDevice, "models/scene.obj", smin, smax);
     auto scene = MyGameObject::createGameObject();
     scene.model = sceneModel;
-    scene.transform.translation = { 2.0f, 4.0f, -2.0f };  // behind Mario from camera's perspective
+    scene.transform.translation = { 2.0f, 4.0f, -2.0f };
     scene.transform.scale = { 1.0f, 1.0f, 1.0f };
     m_vMyGameObjects.push_back(std::move(scene));
-
     
     m_myCamera.setMode(MyCamera::MYCAMERA_FITALL);
 }
@@ -123,7 +127,7 @@ void MyApplication::_loadGameObjects()
 void MyApplication::handleMovement(MyAppKeyMap key)
 {
     const float speed = 0.01f;
-
+    // code that moves the obj and faces it in the direction its moving
     if (key == KEY_LEFT) 
     {
         std::cout << "Move left"  << std::endl;
@@ -145,14 +149,11 @@ void MyApplication::handleMovement(MyAppKeyMap key)
         m_vMyGameObjects[0].transform.rotation = {0.0f, 0.0f, 0.0f};
         m_vMyGameObjects[0].transform.translation.z += speed;
     }
-
+    // keep track of current position to update fitall center
     glm::vec3 currPosition = m_vMyGameObjects[0].transform.translation;
-
-    glm::vec3 newMin = m_baseMarioMin + currPosition;
-    glm::vec3 newMax = m_baseMarioMax + currPosition;
-
+    glm::vec3 newMin = m_objPosMin + currPosition;
+    glm::vec3 newMax = m_objPosMax + currPosition;
     m_myCamera.setSceneMinMax(newMin, newMax);
-
 }
 
 void MyApplication::mouseButtonEvent(bool bMouseDown, float posx, float posy)

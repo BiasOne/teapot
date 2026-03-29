@@ -9,7 +9,6 @@
 
 MyCamera::MyCamera()
 {
-    // TODO: set default camera position
     setViewTarget(
         glm::vec3(0.0f, 0.0f, 10.0f),
         glm::vec3(0.0f, 0.0f, 0.0f),
@@ -202,7 +201,6 @@ void MyCamera::setMotion(bool buttonPress, float x, float y)
     if (!m_bMoving)
         return;
 
-    // TODO handle the camera navitaion based on the navigation mode
     m_vCurrPos.x = x;
     m_vCurrPos.y = y;
 
@@ -233,7 +231,7 @@ void MyCamera::setMotion(bool buttonPress, float x, float y)
         _twist(delta.x, delta.y);
     }
 
-    // TODO - Combine m_m4TempTransform with m_m4ViewMatrix to become the new m_m4ViewMatrix
+    // Combine m_m4TempTransform with m_m4ViewMatrix to become the new m_m4ViewMatrix
 
     // Step 1: decompose m_m4TempTransform to translate only and rotation only matrices
     // Step 2: center of the scene graph and the inverse of the center
@@ -271,7 +269,6 @@ void MyCamera::setMotion(bool buttonPress, float x, float y)
 
 void MyCamera::_pan(float dx, float dy)
 {
-    // TODO: Handle pan operation
     m_m4TempTransform = glm::mat4(1.0f);
     float distance = m_m4ViewMatrix[3][2];
     std::cout << "d = " << distance << std::endl;
@@ -291,7 +288,7 @@ void MyCamera::_pan(float dx, float dy)
 
 void MyCamera::_zoom(float dx, float dy)
 {
-    // TODO: Handle zoom operation
+
     m_m4TempTransform = glm::mat4(1.0f);
     
     const float h = 600.0f;
@@ -299,8 +296,6 @@ void MyCamera::_zoom(float dx, float dy)
     float d = m_m4ViewMatrix[3][2];
 
     float newD = d * 1.0f / (1.0f + dy / h * 2.0f);
-
-    // we need to calculate the delta d rather new d here
     float deltaD = d * (newD - d);
     
     m_m4TempTransform[3][2] = deltaD;
@@ -334,7 +329,7 @@ void MyCamera::_atRotate(float x, float y, float z, float angle)
     axis = glm::normalize(axis);
 
     // Reset delta matrix
-    m_m4TempTransform = glm::mat4(0.0f);
+    m_m4TempTransform = glm::mat4(1.0f);
 
     float x2 = axis.x * axis.x;
     float xy = axis.x * axis.y;
@@ -361,19 +356,17 @@ void MyCamera::_atRotate(float x, float y, float z, float angle)
 
 void MyCamera::_twist(float dx, float dy)
 {
-    // TODO: Handle twist operation
+
     m_m4TempTransform = glm::mat4(1.0f);
 
     const float w = 800.0f;
     const float h = 600.0f;
 
-    // Step 1: normalize both positions by window width and height
     float prevX = m_vPrevPos.x / w;
     float prevY = m_vPrevPos.y / h;
     float currX = m_vCurrPos.x / w;
     float currY = m_vCurrPos.y / h;
 
-    // Step 2: calculate delta rotation
     float prevTheta = atan2f(prevX - 0.5f, prevY - 0.5f);
     float theta     = atan2f(currX - 0.5f, currY - 0.5f);
     float delta_theta = 180.0f / glm::pi<float>() * (theta - prevTheta) * 200.0f; // scaling factor
@@ -396,31 +389,30 @@ void MyCamera::_fitAll()
     glm::vec3 viewVector = glm::vec3(0.0f, 0.0f, -1.0f);
     glm::vec3 lookFrom = lookAt - viewVector * distance;
 
-    // Step 1: calculate the look from point based on the min and max of your scene graph
-    // the new look from
+    // calculate the look from point based on the min and max of scene graph to set new lookFrom
     m_m4TempTransform[3][0] = -lookFrom.x;
     m_m4TempTransform[3][1] = -lookFrom.y;
     m_m4TempTransform[3][2] = -lookFrom.z;
 
-    // Step 2: maintain the existing rotation from m_m4ViewMatrix
+    // maintain the existing rotation from m_m4ViewMatrix
     glm::mat4 rotateOnlyMatrix = m_m4ViewMatrix;
     rotateOnlyMatrix[3][0] = 0.0f;
     rotateOnlyMatrix[3][1] = 0.0f;
     rotateOnlyMatrix[3][2] = 0.0f;
 
-    // Step 3: find the center of your scene graph
+    // find the center of scene graph
     glm::mat4 center = glm::mat4(1.0f);
     center[3][0] = lookAt.x;
     center[3][1] = lookAt.y;
     center[3][2] = lookAt.z;
 
+    // invert center of scene graph
     glm::mat4 centerInverse = glm::mat4(1.0f);
     centerInverse[3][0] = -lookAt.x;
     centerInverse[3][1] = -lookAt.y;
     centerInverse[3][2] = -lookAt.z;
 
     // Combine all matrices to become the new m_m4ViewMatrix
-    // this should be correct
     m_m4ViewMatrix = m_m4TempTransform * center * rotateOnlyMatrix * centerInverse;
     
 }
