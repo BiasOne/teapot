@@ -3,6 +3,7 @@ Vulkan Mario World
 All of the shaders and generated files are included in this ZIP. If you wish to regenerate or rebuild, run the following:
     make clean
     make shader
+    make
     make run
 
 Functionality

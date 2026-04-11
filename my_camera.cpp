@@ -284,7 +284,7 @@ void MyCamera::_pan(float dx, float dy)
     float dh = dy * b / h;
 
     m_m4TempTransform[3][0] = -dw * 200.0f; // Scaling factor
-    m_m4TempTransform[3][1] = -dh * 200.0f; // Scaling factor
+    m_m4TempTransform[3][1] = dh * 200.0f; // Scaling factor
 }
 
 void MyCamera::_zoom(float dx, float dy)
@@ -367,15 +367,15 @@ void MyCamera::_twist(float dx, float dy)
     const float h = 600.0f;
 
     // normalize prevX/prevY and currX and CurrY by width and height of window
-    float prevX = m_vPrevPos.x / w;
-    float prevY = m_vPrevPos.y / h;
-    float currX = m_vCurrPos.x / w;
-    float currY = m_vCurrPos.y / h;
+    float prevX = m_vPrevPos.x;
+    float prevY = m_vPrevPos.y;
+    float currX = m_vCurrPos.x;
+    float currY = m_vCurrPos.y;
 
     // calculate delta_theta using m_vCurrPos and m_vPrevPos
     float prevTheta = atan2f(prevX - 0.5f, prevY - 0.5f);
     float theta     = atan2f(currX - 0.5f, currY - 0.5f);
-    float delta_theta = 180.0f / glm::pi<float>() * (theta - prevTheta) * 200.0f; // scaling factor
+    float delta_theta = 180.0f / glm::pi<float>() * (theta - prevTheta); // scaling factor
   
     glm::vec3 sx, sy, sz;
     _getScreenXYZ(sx, sy, sz);

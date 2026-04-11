@@ -112,7 +112,13 @@ void MyApplication::_loadGameObjects()
     terrible_mario.transform.translation = { 0.0f, 0.0f, 0.0f};
     terrible_mario.transform.scale = { 1.0f, 1.0f, 1.0f };
     m_vMyGameObjects.push_back(std::move(terrible_mario));
-    m_myCamera.setSceneMinMax(min, max);
+
+    m_objPosMin = min;
+    m_objPosMax = max;
+    glm::mat4 modelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f)) * glm::scale(glm::mat4(1.0f), glm::vec3(1.0f));
+    glm::vec3 worldMin = glm::vec3(modelMatrix * glm::vec4(min, 1.0f));
+    glm::vec3 worldMax = glm::vec3(modelMatrix * glm::vec4(max, 1.0f));
+    m_myCamera.setSceneMinMax(worldMin, worldMax);
 
     std::shared_ptr<MyModel> sceneModel = MyModel::createModelFromFile(m_myDevice, "models/scene.obj", smin, smax);
     auto scene = MyGameObject::createGameObject();
@@ -150,10 +156,12 @@ void MyApplication::handleMovement(MyAppKeyMap key)
         m_vMyGameObjects[0].transform.translation.z += speed;
     }
     // keep track of current position to update fitall center
-    glm::vec3 currPosition = m_vMyGameObjects[0].transform.translation;
-    glm::vec3 newMin = m_objPosMin + currPosition;
-    glm::vec3 newMax = m_objPosMax + currPosition;
-    m_myCamera.setSceneMinMax(newMin, newMax);
+    glm::vec3 translation = m_vMyGameObjects[0].transform.translation;
+    glm::vec3 scale = m_vMyGameObjects[0].transform.scale;
+    glm::mat4 modelMatrix = glm::translate(glm::mat4(1.0f), translation) * glm::scale(glm::mat4(1.0f), scale);
+    glm::vec3 worldMin = glm::vec3(modelMatrix * glm::vec4(m_objPosMin, 1.0f));
+    glm::vec3 worldMax = glm::vec3(modelMatrix * glm::vec4(m_objPosMax, 1.0f));
+    m_myCamera.setSceneMinMax(worldMin, worldMax);
 }
 
 void MyApplication::mouseButtonEvent(bool bMouseDown, float posx, float posy)
